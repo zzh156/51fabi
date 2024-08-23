@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: MIT
 
-//已部署：0x3db98760eade315a213a38169a6ad761977edc9b
 pragma solidity ^0.8.0;
 
 interface IERC20 {
@@ -40,7 +39,7 @@ contract MiddleContract {
         _;
     }
 
-    // Function to create contracts using bytecode
+    // Function to create contracts using bytecode and transfer ownership to caller
     function _createContract(bytes memory bytecode, bytes memory constructorArgs) internal returns (address) {
         bytes memory code = abi.encodePacked(bytecode, constructorArgs);
         address addr;
@@ -67,7 +66,7 @@ contract MiddleContract {
         address[] memory addressParams,
         uint256[] memory numberParams,
         bool[] memory boolParams
-    ) external payable paidCorrectAmount(presaleFee){
+    ) external payable paidCorrectAmount(presaleFee) {
         bytes memory constructorArgs = encodeParams(stringParams, addressParams, numberParams, boolParams);
         address newContract = _createContract(bytecode, constructorArgs);
         
@@ -100,7 +99,7 @@ contract MiddleContract {
         bytes memory constructorArgs = encodeParams(stringParams, addressParams, numberParams, boolParams);
         address newContract = _createContract(bytecode, constructorArgs);
         
-       
+        IERC20(newContract).transfer(msg.sender, IERC20(newContract).balanceOf(address(this)));
         emit ContractCreated(msg.sender, newContract, "Dividend Token");
         feeRecipient.transfer(msg.value);
     }
@@ -115,7 +114,7 @@ contract MiddleContract {
         bytes memory constructorArgs = encodeParams(stringParams, addressParams, numberParams, boolParams);
         address newContract = _createContract(bytecode, constructorArgs);
         
-       
+        IERC20(newContract).transfer(msg.sender, IERC20(newContract).balanceOf(address(this)));
         emit ContractCreated(msg.sender, newContract, "LP Dividend");
         feeRecipient.transfer(msg.value);
     }
@@ -130,7 +129,7 @@ contract MiddleContract {
         bytes memory constructorArgs = encodeParams(stringParams, addressParams, numberParams, boolParams);
         address newContract = _createContract(bytecode, constructorArgs);
         
-        
+        IERC20(newContract).transfer(msg.sender, IERC20(newContract).balanceOf(address(this)));
         emit ContractCreated(msg.sender, newContract, "LP Dividend + Referral");
         feeRecipient.transfer(msg.value);
     }
@@ -145,7 +144,7 @@ contract MiddleContract {
         bytes memory constructorArgs = encodeParams(stringParams, addressParams, numberParams, boolParams);
         address newContract = _createContract(bytecode, constructorArgs);
         
-       
+        IERC20(newContract).transfer(msg.sender, IERC20(newContract).balanceOf(address(this)));
         emit ContractCreated(msg.sender, newContract, "Protocol 314");
         feeRecipient.transfer(msg.value);
     }
@@ -160,7 +159,7 @@ contract MiddleContract {
         bytes memory constructorArgs = encodeParams(stringParams, addressParams, numberParams, boolParams);
         address newContract = _createContract(bytecode, constructorArgs);
         
-      
+        IERC20(newContract).transfer(msg.sender, IERC20(newContract).balanceOf(address(this)));
         emit ContractCreated(msg.sender, newContract, "Compound + Referral");
         feeRecipient.transfer(msg.value);
     }
@@ -174,7 +173,7 @@ contract MiddleContract {
         bytes memory constructorArgs = abi.encode(stringParams, addressParams, numberParams);
         address newContract = _createContract(bytecode, constructorArgs);
         
-       
+        IERC20(newContract).transfer(msg.sender, IERC20(newContract).balanceOf(address(this)));
         emit ContractCreated(msg.sender, newContract, "Mint + Violent Dividend");
         feeRecipient.transfer(msg.value);
     }
@@ -189,7 +188,7 @@ contract MiddleContract {
         bytes memory constructorArgs = encodeParams(stringParams, addressParams, numberParams, boolParams);
         address newContract = _createContract(bytecode, constructorArgs);
         
-        
+        IERC20(newContract).transfer(msg.sender, IERC20(newContract).balanceOf(address(this)));
         emit ContractCreated(msg.sender, newContract, "Mint + Burn Pool");
         feeRecipient.transfer(msg.value);
     }
@@ -204,9 +203,8 @@ contract MiddleContract {
         bytes memory constructorArgs = encodeParams(stringParams, addressParams, numberParams, boolParams);
         address newContract = _createContract(bytecode, constructorArgs);
         
-       
+        IERC20(newContract).transfer(msg.sender, IERC20(newContract).balanceOf(address(this)));
         emit ContractCreated(msg.sender, newContract, "LP Mining + Referral");
         feeRecipient.transfer(msg.value);
     }
 }
-
