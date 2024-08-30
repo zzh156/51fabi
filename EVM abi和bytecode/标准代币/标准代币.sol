@@ -1,6 +1,5 @@
-//  Created By: PandaTool
-//  Website: https://PandaTool.org
-//  Telegram: https://t.me/PandaTool
+//  Created By: 51fabi(51发币)
+//  Website: https://51fabi.com
 //  The Best Tool for Token Management
 
 // SPDX-License-Identifier: MIT

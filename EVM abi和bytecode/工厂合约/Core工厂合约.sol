@@ -26,10 +26,7 @@ contract MiddleContract {
     uint256 public presaleFee = 0.08 ether;
     uint256 public lpDividendFee = 0.09 ether;
     uint256 public lpDividendReferralFee = 0.1 ether;
-    uint256 public protocol314Fee = 0.12 ether;
     uint256 public compoundReferralFee = 0.13 ether;
-    uint256 public mintViolentDividendFee = 0.12 ether;
-    uint256 public mintBurnPoolFee = 0.15 ether;
     uint256 public lpMiningReferralFee = 0.18 ether;
 
     // Function modifiers to check correct payment
