@@ -13,7 +13,7 @@ interface IPandaToken {
     ) external;
 }
 
-contract PandaTokenFactory {
+contract StandardTokenFactory {
     using Clones for address;
 
     address public immutable template;
@@ -23,18 +23,28 @@ contract PandaTokenFactory {
     struct CreatedContract {
         address creator;
         address contractAddress;
+        string protocolType;  // 代币协议类型
     }
 
     CreatedContract[] public createdContracts;
+    mapping(address => CreatedContract[]) public contractsByCreator;
 
-    event PandaTokenCreated(address indexed creator, address tokenAddress, string name, string symbol, uint256 decimals, uint256 initialSupply);
+    event StandardTokenCreated(
+        address indexed creator,
+        address tokenAddress,
+        string name,
+        string symbol,
+        uint256 decimals,
+        uint256 initialSupply,
+        string protocolType  // 记录代币协议类型
+    );
 
     constructor(address _template) {
         require(_template != address(0), "Template address cannot be zero");
         template = _template;
     }
 
-    function createPandaToken(
+    function createStandardToken(
         string memory name,
         string memory symbol,
         uint256 decimals,
@@ -49,17 +59,26 @@ contract PandaTokenFactory {
         IPandaToken(clone).initialize(name, symbol, decimals, initialSupply, msg.sender);
 
         // 记录创建的合约信息
-        createdContracts.push(CreatedContract({
+        string memory protocolType = "Standard Token";  // 自动设置协议类型为标准代币
+        CreatedContract memory newContract = CreatedContract({
             creator: msg.sender,
-            contractAddress: clone
-        }));
+            contractAddress: clone,
+            protocolType: protocolType
+        });
+        createdContracts.push(newContract);
+        contractsByCreator[msg.sender].push(newContract);
 
         // 转移费用到指定地址
         (bool success, ) = feeRecipient.call{value: msg.value}("");
         require(success, "Fee transfer failed");
 
-        emit PandaTokenCreated(msg.sender, clone, name, symbol, decimals, initialSupply);
+        emit StandardTokenCreated(msg.sender, clone, name, symbol, decimals, initialSupply, protocolType);
         return clone;
+    }
+
+    // 修改后的函数，返回包含合约地址和代币类型的结构体数组
+    function getContractsByCreator(address creator) external view returns (CreatedContract[] memory) {
+        return contractsByCreator[creator];
     }
 
     function getCreatedContracts() external view returns (CreatedContract[] memory) {

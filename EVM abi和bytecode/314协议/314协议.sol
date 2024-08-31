@@ -3,7 +3,7 @@ pragma solidity 0.8.18;
 
 interface IEERC314 {
     event Transfer(address indexed from, address indexed to, uint256 value);
-    event AddLiquidity(uint32 _blockToUnlockLiquidity, uint256 value);
+    event AddLiquidity(uint32 blockToUnlockLiquidity, uint256 value);
     event RemoveLiquidity(uint256 value);
     event Swap(
         address indexed sender,
@@ -43,6 +43,7 @@ contract Panda314 is IEERC314 {
     bool public tradingEnable;
     bool public liquidityAdded;
     bool public enableWalletLimit;
+    bool private _initialized;
 
     modifier onlyOwner() {
         require(msg.sender == owner, "Ownable: caller is not the owner");
@@ -50,23 +51,21 @@ contract Panda314 is IEERC314 {
     }
 
     modifier onlyLiquidityProvider() {
-        require(
-            msg.sender == fundAddress,
-            "You are not the liquidity provider"
-        );
+        require(msg.sender == fundAddress, "You are not the liquidity provider");
         _;
     }
 
-    constructor(
+    function initialize(
         string[] memory stringParams,
         address[] memory addressParams,
         uint256[] memory numberParams,
         bool[] memory boolParams
-    ) {
+    ) external {
+        require(!_initialized, "Already initialized");
+        _initialized = true;
+
         _name = stringParams[0];
         _symbol = stringParams[1];
-
-
 
         fundAddress = payable(addressParams[0]);
         owner = tx.origin;
@@ -85,14 +84,12 @@ contract Panda314 is IEERC314 {
         enableWalletLimit = boolParams[0];
 
         uint256 liquidityAmount = (_totalSupply * liquidityPct) / 10000;
-        address ReceiveAddress = addressParams[1];
-        _balances[ReceiveAddress] = _totalSupply - liquidityAmount;
-        
+        address receiveAddress = addressParams[1];
+        _balances[receiveAddress] = _totalSupply - liquidityAmount;
         _balances[address(this)] = liquidityAmount;
 
         emit Transfer(address(0), address(this), liquidityAmount);
-        emit Transfer(address(0), ReceiveAddress, _totalSupply - liquidityAmount);
-
+        emit Transfer(address(0), receiveAddress, _totalSupply - liquidityAmount);
     }
 
     function name() public view virtual returns (string memory) {
@@ -116,7 +113,6 @@ contract Panda314 is IEERC314 {
     }
 
     function transfer(address to, uint256 value) public virtual returns (bool) {
-        // sell or transfer
         if (to == address(this)) {
             sell(value);
         } else {
@@ -125,11 +121,7 @@ contract Panda314 is IEERC314 {
         return true;
     }
 
-    function _transfer(
-        address from,
-        address to,
-        uint256 value
-    ) internal virtual {
+    function _transfer(address from, address to, uint256 value) internal virtual {
         if (to != address(0)) {
             require(
                 lastTransaction[msg.sender] != block.number,
@@ -144,10 +136,7 @@ contract Panda314 is IEERC314 {
             _lastTxTime[msg.sender] = block.timestamp;
         }
 
-        require(
-            _balances[from] >= value,
-            "ERC20: transfer amount exceeds balance"
-        );
+        require(_balances[from] >= value, "ERC20: transfer amount exceeds balance");
 
         unchecked {
             _balances[from] = _balances[from] - value;
@@ -170,14 +159,14 @@ contract Panda314 is IEERC314 {
         return (address(this).balance, _balances[address(this)]);
     }
 
-
     function disableWalletLimit() public onlyOwner {
         enableWalletLimit = false;
     }
 
-    function changeWalletLimit(uint256 _amount) external onlyOwner {
-        maxWalletAmount = _amount;
+    function changeWalletLimit(uint256 amount) external onlyOwner {
+        maxWalletAmount = amount;
     }
+
     function changeCooldownSec(uint256 sec) external onlyOwner {
         cooldownSec = sec;
     }
@@ -185,26 +174,23 @@ contract Panda314 is IEERC314 {
     function renounceOwnership() external onlyOwner {
         owner = address(0);
     }
+
     function setFundAddress(address payable addr) external onlyOwner {
         fundAddress = addr;
     }
-    function addLiquidity(uint32 _blockToUnlockLiquidity)
-        public
-        payable
-        onlyLiquidityProvider
-    {
-        require(liquidityAdded == false, "Liquidity already added");
+
+    function addLiquidity(uint32 blockToUnlockLiquidity) public payable onlyLiquidityProvider {
+        require(!liquidityAdded, "Liquidity already added");
 
         liquidityAdded = true;
 
         require(msg.value > 0, "No ETH sent");
-        require(block.number < _blockToUnlockLiquidity, "Block number too low");
+        require(block.number < blockToUnlockLiquidity, "Block number too low");
 
-        blockToUnlockLiquidity = _blockToUnlockLiquidity;
+        blockToUnlockLiquidity = blockToUnlockLiquidity;
         tradingEnable = true;
 
-
-        emit AddLiquidity(_blockToUnlockLiquidity, msg.value);
+        emit AddLiquidity(blockToUnlockLiquidity, msg.value);
     }
 
     function removeLiquidity() public onlyLiquidityProvider {
@@ -217,26 +203,19 @@ contract Panda314 is IEERC314 {
         emit RemoveLiquidity(address(this).balance);
     }
 
-    function extendLiquidityLock(uint32 _blockToUnlockLiquidity)
-        public
-        onlyLiquidityProvider
-    {
+    function extendLiquidityLock(uint32 blockToUnlockLiquidity) public onlyLiquidityProvider {
         require(
-            blockToUnlockLiquidity < _blockToUnlockLiquidity,
+            blockToUnlockLiquidity < blockToUnlockLiquidity,
             "You can't shorten duration"
         );
 
-        blockToUnlockLiquidity = _blockToUnlockLiquidity;
+        blockToUnlockLiquidity = blockToUnlockLiquidity;
     }
 
-    function getAmountOut(uint256 value, bool _buy)
-        public
-        view
-        returns (uint256)
-    {
+    function getAmountOut(uint256 value, bool isBuy) public view returns (uint256) {
         (uint256 reserveETH, uint256 reserveToken) = getReserves();
 
-        if (_buy) {
+        if (isBuy) {
             return (value * reserveToken) / (reserveETH + value);
         } else {
             return (value * reserveETH) / (reserveToken + value);
@@ -252,47 +231,43 @@ contract Panda314 is IEERC314 {
 
         fundAddress.transfer(feeValue);
 
-        uint256 token_amount = (swapValue * _balances[address(this)]) /
-            (address(this).balance);
+        uint256 tokenAmount = (swapValue * _balances[address(this)]) / (address(this).balance);
 
         if (enableWalletLimit) {
             require(
-                token_amount + _balances[msg.sender] <= maxWalletAmount,
+                tokenAmount + _balances[msg.sender] <= maxWalletAmount,
                 "Max wallet exceeded"
             );
         }
 
-        uint256 burn_amount = (token_amount * buy_burnFee) / 10000;
-        uint256 user_amount = token_amount - burn_amount;
-        _transfer(address(this), msg.sender, user_amount);
-        _transfer(address(this), address(0), burn_amount);
+        uint256 burnAmount = (tokenAmount * buy_burnFee) / 10000;
+        uint256 userAmount = tokenAmount - burnAmount;
+        _transfer(address(this), msg.sender, userAmount);
+        _transfer(address(this), address(0), burnAmount);
 
-        emit Swap(msg.sender, swapValue, 0, 0, user_amount);
+        emit Swap(msg.sender, swapValue, 0, 0, userAmount);
     }
 
-    function sell(uint256 sell_amount) internal {
+    function sell(uint256 sellAmount) internal {
         require(tradingEnable, "Trading not enable");
 
-        uint256 burn_amount = (sell_amount * sell_burnFee) / 10000;
-        uint256 swap_amount = sell_amount - burn_amount;
+        uint256 burnAmount = (sellAmount * sell_burnFee) / 10000;
+        uint256 swapAmount = sellAmount - burnAmount;
 
-        uint256 ethAmount = (swap_amount * address(this).balance) /
-            (_balances[address(this)] + swap_amount);
+        uint256 ethAmount = (swapAmount * address(this).balance) /
+            (_balances[address(this)] + swapAmount);
 
         require(ethAmount > 0, "Sell amount too low");
-        require(
-            address(this).balance >= ethAmount,
-            "Insufficient ETH in reserves"
-        );
+        require(address(this).balance >= ethAmount, "Insufficient ETH in reserves");
 
-        _transfer(msg.sender, address(this), swap_amount);
-        _transfer(msg.sender, address(0), burn_amount);
+        _transfer(msg.sender, address(this), swapAmount);
+        _transfer(msg.sender, address(0), burnAmount);
 
         uint256 feeValue = (ethAmount * _sellFundFee) / 10000;
         payable(fundAddress).transfer(feeValue);
         payable(msg.sender).transfer(ethAmount - feeValue);
 
-        emit Swap(msg.sender, 0, sell_amount, ethAmount - feeValue, 0);
+        emit Swap(msg.sender, 0, sellAmount, ethAmount - feeValue, 0);
     }
 
     receive() external payable {
