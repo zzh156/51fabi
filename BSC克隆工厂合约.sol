@@ -27,10 +27,7 @@ interface IPandaDividendToken {
 
 interface IPandaLPDividendToken {
     function initialize(
-        string memory name_,
-        string memory symbol_,
-        uint256 decimals_,
-        uint256 tTotal_,
+        string [] memory stringparams,
         address[] memory addressParams,
         uint256[] memory numberParams,
         bool[] memory boolParams
@@ -50,8 +47,7 @@ interface IPandaMintBrutalDividendToken {
     function initialize(
         string[] memory stringParams, 
         address[] memory addressParams, 
-        uint256[] memory numberParams, 
-        bool[] memory boolParams
+        uint256[] memory numberParams
     ) external;
 }
 
