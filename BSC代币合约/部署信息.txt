@@ -1,0 +1,15 @@
+标准代币合约部署在bsc testnet：0x6a9518f0aa4b4ebcc029382a02c1c9dbeec1bbf5
+分红本币合约部署在bsc testnet：0x90bce061c746108524db84ad1a6b946bb5d4cf9a
+
+
+
+lp分红合约部署在bsc testnet ： 0x4f49a2fc30dbc8402ff0bf7d8ed82c0a9f8202fb （启用200优化，不然超出大小限制）
+lp分红➕推荐奖励部署在 bsc testnet ：0xff656313605623fd82c707fb0ff32f67b381827c （启用200优化，不然超出大小限制）
+314协议部署在：0x8a30a6a67c16462cc00a5086b5333894d00356af
+
+持币复利➕推奖部署在：0x98e44cf1c0d31a044b3ba9f21b2d39b85b5b82eb
+Mint➕暴力分红部署在：0x5e1b91063496e3f84abb8e56b1b15051b180cbcf
+Mint➕底池燃烧部署在：0x49cbdbde6c215bd162a45e7119d067530ba9dd8c
+lp挖坑➕推荐奖励：0x067afe7913b32d139d931e8a38e3b5b0afaec297
+
+clone工厂合约：0x27b0cc2bb65337ea823dfa476261e1d321368718

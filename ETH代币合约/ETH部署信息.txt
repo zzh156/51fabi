@@ -1,0 +1,1 @@
+标准代币合约部署在arb sepolia：0x8478ad414a45da7cab52366666c712d2612fd329

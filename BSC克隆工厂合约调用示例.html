@@ -1,0 +1,1413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Token Factory</title>
+    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+</head>
+<body>
+    <h2>创建标准代币</h2>
+    <div>
+        <label>代币名称：</label>
+        <input type="text" id="standardTokenName" placeholder="Name"><br>
+        <label>代币符号：</label>
+        <input type="text" id="standardTokenSymbol" placeholder="Symbol"><br>
+        <label>小数位数：</label>
+        <input type="number" id="standardTokenDecimals" placeholder="Decimals" value="18"><br>
+        <label>总供应量：</label>
+        <input type="number" id="standardTokenSupply" placeholder="Total Supply"><br>
+        <button onclick="createStandardToken()">创建标准代币</button>
+    </div>
+
+    <h2>创建分红代币</h2>
+    <div>
+        <label>代币名称：</label>
+        <input type="text" id="dividendTokenName" placeholder="Name"><br>
+        <label>代币符号：</label>
+        <input type="text" id="dividendTokenSymbol" placeholder="Symbol"><br>
+        <label>小数位数：</label>
+        <input type="number" id="dividendTokenDecimals" placeholder="Decimals" value="18"><br>
+        <label>总供应量：</label>
+        <input type="number" id="dividendTokenSupply" placeholder="Total Supply"><br>
+        <button onclick="createDividendToken()">创建分红代币</button>
+    </div>
+
+    <h2>创建LP分红代币</h2>
+    <div>
+        <label>代币名称：</label>
+        <input type="text" id="lpDividendTokenName" placeholder="Name"><br>
+        <label>代币符号：</label>
+        <input type="text" id="lpDividendTokenSymbol" placeholder="Symbol"><br>
+        <label>小数位数：</label>
+        <input type="number" id="lpDividendTokenDecimals" placeholder="Decimals" value="18"><br>
+        <label>总供应量：</label>
+        <input type="number" id="lpDividendTokenSupply" placeholder="Total Supply"><br>
+        <button onclick="createLPDividendToken()">创建LP分红代币</button>
+    </div>
+
+    <h2>创建LP分红+推荐奖励代币</h2>
+    <div>
+        <label>代币名称：</label>
+        <input type="text" id="lpDividendReferralTokenName" placeholder="Name"><br>
+        <label>代币符号：</label>
+        <input type="text" id="lpDividendReferralTokenSymbol" placeholder="Symbol"><br>
+        <label>小数位数：</label>
+        <input type="number" id="lpDividendReferralTokenDecimals" placeholder="Decimals" value="18"><br>
+        <label>总供应量：</label>
+        <input type="number" id="lpDividendReferralTokenSupply" placeholder="Total Supply"><br>
+        <button onclick="createLPDividendReferralToken()">创建LP分红+推荐奖励代币</button>
+    </div>
+
+    <h2>创建Mint+暴力分红代币</h2>
+    <div>
+        <label>代币名称：</label>
+        <input type="text" id="mintBrutalDividendTokenName" placeholder="Name"><br>
+        <label>代币符号：</label>
+        <input type="text" id="mintBrutalDividendTokenSymbol" placeholder="Symbol"><br>
+        <label>小数位数：</label>
+        <input type="number" id="mintBrutalDividendTokenDecimals" placeholder="Decimals" value="18"><br>
+        <label>总供应量：</label>
+        <input type="number" id="mintBrutalDividendTokenSupply" placeholder="Total Supply"><br>
+        <button onclick="createMintBrutalDividendToken()">创建Mint+暴力分红代币</button>
+    </div>
+
+    <h2>创建Mint+底池燃烧代币</h2>
+    <div>
+        <label>代币名称：</label>
+        <input type="text" id="mintPoolBurnTokenName" placeholder="Name"><br>
+        <label>代币符号：</label>
+        <input type="text" id="mintPoolBurnTokenSymbol" placeholder="Symbol"><br>
+        <label>小数位数：</label>
+        <input type="number" id="mintPoolBurnTokenDecimals" placeholder="Decimals" value="18"><br>
+        <label>总供应量：</label>
+        <input type="number" id="mintPoolBurnTokenSupply" placeholder="Total Supply"><br>
+        <button onclick="createMintPoolBurnToken()">创建Mint+底池燃烧代币</button>
+    </div>
+
+    <h2>创建LP挖矿+推荐奖励代币</h2>
+    <div>
+        <label>代币名称：</label>
+        <input type="text" id="lpMiningReferralTokenName" placeholder="Name"><br>
+        <label>代币符号：</label>
+        <input type="text" id="lpMiningReferralTokenSymbol" placeholder="Symbol"><br>
+        <label>小数位数：</label>
+        <input type="number" id="lpMiningReferralTokenDecimals" placeholder="Decimals" value="18"><br>
+        <label>总供应量：</label>
+        <input type="number" id="lpMiningReferralTokenSupply" placeholder="Total Supply"><br>
+        <button onclick="createLPMiningReferralToken()">创建LP挖矿+推荐奖励代币</button>
+    </div>
+
+    <h2>创建314协议代币</h2>
+    <div>
+        <label>代币名称：</label>
+        <input type="text" id="panda314TokenName" placeholder="Name"><br>
+        <label>代币符号：</label>
+        <input type="text" id="panda314TokenSymbol" placeholder="Symbol"><br>
+        <label>小数位数：</label>
+        <input type="number" id="panda314TokenDecimals" placeholder="Decimals" value="18"><br>
+        <label>总供应量：</label>
+        <input type="number" id="panda314TokenSupply" placeholder="Total Supply"><br>
+        <button onclick="createPanda314Token()">创建314协议代币</button>
+    </div>
+
+    <h2>查询用户创建的合约</h2>
+    <div>
+        <label>用户地址：</label>
+        <input type="text" id="creatorAddress" placeholder="Creator Address"><br>
+        <button onclick="getContractsByCreator()">查询</button>
+        <ul id="createdContracts"></ul>
+    </div>
+
+    <script>
+        let web3;
+        let accounts;
+        let tokenFactory;
+
+        async function connectMetaMask() {
+            if (typeof window.ethereum !== 'undefined') {
+                try {
+                    await ethereum.request({ method: 'eth_requestAccounts' });
+                    web3 = new Web3(window.ethereum);  
+                    accounts = await web3.eth.getAccounts();
+                    console.log('已连接到MetaMask账户:', accounts[0]);
+
+                    const tokenFactoryAddress = '0x27b0cc2bb65337ea823dfa476261e1d321368718';  
+                    const tokenFactoryABI =  [
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_standardTokenTemplate",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "_dividendTokenTemplate",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "_lpDividendTokenTemplate",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "_lpDividendReferralTokenTemplate",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "_mintBrutalDividendTokenTemplate",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "_mintPoolBurnTokenTemplate",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "_lpMiningReferralTokenTemplate",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "_compoundingReferralTokenTemplate",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "_panda314Template",
+				"type": "address"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"inputs": [],
+		"name": "ERC1167FailedCreateClone",
+		"type": "error"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "creator",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "tokenAddress",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "name",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "symbol",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "totalSupply",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "protocolType",
+				"type": "string"
+			}
+		],
+		"name": "CompoundingReferralTokenCreated",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "creator",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "tokenAddress",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "name",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "symbol",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "decimals",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "tTotal",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "protocolType",
+				"type": "string"
+			}
+		],
+		"name": "DividendTokenCreated",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "creator",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "tokenAddress",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "name",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "symbol",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "decimals",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "tTotal",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "protocolType",
+				"type": "string"
+			}
+		],
+		"name": "LPDividendReferralTokenCreated",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "creator",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "tokenAddress",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "name",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "symbol",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "decimals",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "tTotal",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "protocolType",
+				"type": "string"
+			}
+		],
+		"name": "LPDividendTokenCreated",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "creator",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "tokenAddress",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "name",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "symbol",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "totalSupply",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "protocolType",
+				"type": "string"
+			}
+		],
+		"name": "LPMiningReferralTokenCreated",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "creator",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "tokenAddress",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "name",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "symbol",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "totalSupply",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "protocolType",
+				"type": "string"
+			}
+		],
+		"name": "MintBrutalDividendTokenCreated",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "creator",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "tokenAddress",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "name",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "symbol",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "totalSupply",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "protocolType",
+				"type": "string"
+			}
+		],
+		"name": "MintPoolBurnTokenCreated",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "creator",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "tokenAddress",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "name",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "symbol",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "totalSupply",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "protocolType",
+				"type": "string"
+			}
+		],
+		"name": "Panda314Created",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "creator",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "tokenAddress",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "name",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "symbol",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "decimals",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "initialSupply",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "protocolType",
+				"type": "string"
+			}
+		],
+		"name": "StandardTokenCreated",
+		"type": "event"
+	},
+	{
+		"inputs": [],
+		"name": "compoundingReferralTokenTemplate",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "contractsByCreator",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "creator",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "contractAddress",
+				"type": "address"
+			},
+			{
+				"internalType": "string",
+				"name": "protocolType",
+				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string[]",
+				"name": "stringParams",
+				"type": "string[]"
+			},
+			{
+				"internalType": "address[]",
+				"name": "addressParams",
+				"type": "address[]"
+			},
+			{
+				"internalType": "uint256[]",
+				"name": "numberParams",
+				"type": "uint256[]"
+			},
+			{
+				"internalType": "bool[]",
+				"name": "boolParams",
+				"type": "bool[]"
+			}
+		],
+		"name": "createCompoundingReferralToken",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "name",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "symbol",
+				"type": "string"
+			},
+			{
+				"internalType": "uint256",
+				"name": "decimals",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "tTotal",
+				"type": "uint256"
+			},
+			{
+				"internalType": "address[]",
+				"name": "addressParams",
+				"type": "address[]"
+			},
+			{
+				"internalType": "uint256[]",
+				"name": "numberParams",
+				"type": "uint256[]"
+			},
+			{
+				"internalType": "bool[]",
+				"name": "boolParams",
+				"type": "bool[]"
+			}
+		],
+		"name": "createDividendToken",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string[]",
+				"name": "stringParams",
+				"type": "string[]"
+			},
+			{
+				"internalType": "address[]",
+				"name": "addressParams",
+				"type": "address[]"
+			},
+			{
+				"internalType": "uint256[]",
+				"name": "numberParams",
+				"type": "uint256[]"
+			},
+			{
+				"internalType": "bool[]",
+				"name": "boolParams",
+				"type": "bool[]"
+			}
+		],
+		"name": "createLPDividendReferralToken",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "name",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "symbol",
+				"type": "string"
+			},
+			{
+				"internalType": "uint256",
+				"name": "decimals",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "tTotal",
+				"type": "uint256"
+			},
+			{
+				"internalType": "address[]",
+				"name": "addressParams",
+				"type": "address[]"
+			},
+			{
+				"internalType": "uint256[]",
+				"name": "numberParams",
+				"type": "uint256[]"
+			},
+			{
+				"internalType": "bool[]",
+				"name": "boolParams",
+				"type": "bool[]"
+			}
+		],
+		"name": "createLPDividendToken",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string[]",
+				"name": "stringParams",
+				"type": "string[]"
+			},
+			{
+				"internalType": "address[]",
+				"name": "addressParams",
+				"type": "address[]"
+			},
+			{
+				"internalType": "uint256[]",
+				"name": "numberParams",
+				"type": "uint256[]"
+			},
+			{
+				"internalType": "bool[]",
+				"name": "boolParams",
+				"type": "bool[]"
+			}
+		],
+		"name": "createLPMiningReferralToken",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string[]",
+				"name": "stringParams",
+				"type": "string[]"
+			},
+			{
+				"internalType": "address[]",
+				"name": "addressParams",
+				"type": "address[]"
+			},
+			{
+				"internalType": "uint256[]",
+				"name": "numberParams",
+				"type": "uint256[]"
+			},
+			{
+				"internalType": "bool[]",
+				"name": "boolParams",
+				"type": "bool[]"
+			}
+		],
+		"name": "createMintBrutalDividendToken",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string[]",
+				"name": "stringParams",
+				"type": "string[]"
+			},
+			{
+				"internalType": "address[]",
+				"name": "addressParams",
+				"type": "address[]"
+			},
+			{
+				"internalType": "uint256[]",
+				"name": "numberParams",
+				"type": "uint256[]"
+			},
+			{
+				"internalType": "bool[]",
+				"name": "boolParams",
+				"type": "bool[]"
+			}
+		],
+		"name": "createMintPoolBurnToken",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string[]",
+				"name": "stringParams",
+				"type": "string[]"
+			},
+			{
+				"internalType": "address[]",
+				"name": "addressParams",
+				"type": "address[]"
+			},
+			{
+				"internalType": "uint256[]",
+				"name": "numberParams",
+				"type": "uint256[]"
+			},
+			{
+				"internalType": "bool[]",
+				"name": "boolParams",
+				"type": "bool[]"
+			}
+		],
+		"name": "createPanda314Token",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "name",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "symbol",
+				"type": "string"
+			},
+			{
+				"internalType": "uint256",
+				"name": "decimals",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "initialSupply",
+				"type": "uint256"
+			}
+		],
+		"name": "createStandardToken",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "createdContracts",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "creator",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "contractAddress",
+				"type": "address"
+			},
+			{
+				"internalType": "string",
+				"name": "protocolType",
+				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "creationFee",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "dividendTokenTemplate",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "feeRecipient",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "creator",
+				"type": "address"
+			}
+		],
+		"name": "getContractsByCreator",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "address",
+						"name": "creator",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "contractAddress",
+						"type": "address"
+					},
+					{
+						"internalType": "string",
+						"name": "protocolType",
+						"type": "string"
+					}
+				],
+				"internalType": "struct TokenFactory.CreatedContract[]",
+				"name": "",
+				"type": "tuple[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getCreatedContracts",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "address",
+						"name": "creator",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "contractAddress",
+						"type": "address"
+					},
+					{
+						"internalType": "string",
+						"name": "protocolType",
+						"type": "string"
+					}
+				],
+				"internalType": "struct TokenFactory.CreatedContract[]",
+				"name": "",
+				"type": "tuple[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "lpDividendReferralTokenTemplate",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "lpDividendTokenTemplate",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "lpMiningReferralTokenTemplate",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "mintBrutalDividendTokenTemplate",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "mintPoolBurnTokenTemplate",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "panda314Template",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "standardTokenTemplate",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	}
+];
+                    tokenFactory = new web3.eth.Contract(tokenFactoryABI, tokenFactoryAddress);
+
+                    const chainId = await web3.eth.getChainId();
+                    if (chainId !== 97) {  
+                        alert("请切换到BSC测试网");
+                        await ethereum.request({
+                            method: 'wallet_switchEthereumChain',
+                            params: [{ chainId: '0x61' }]  
+                        });
+                    }
+                } catch (error) {
+                    console.error('MetaMask连接失败:', error);
+                    alert('MetaMask连接失败，请检查是否安装MetaMask并授权使用。');
+                }
+            } else {
+                alert('请安装MetaMask钱包！');
+            }
+        }
+
+        async function createStandardToken() {
+            const name = document.getElementById("standardTokenName").value;
+            const symbol = document.getElementById("standardTokenSymbol").value;
+            const decimals = parseInt(document.getElementById("standardTokenDecimals").value);
+            const supply = parseInt(document.getElementById("standardTokenSupply").value);
+            try {
+                const receipt = await tokenFactory.methods.createStandardToken(name, symbol, decimals, supply).send({
+                    from: accounts[0],
+                    value: web3.utils.toWei("0.03", "ether")
+                });
+                alert("标准代币创建成功！");
+            } catch (error) {
+                alert(`创建标准代币失败: ${error.message}`);
+            }
+        }
+
+        async function createDividendToken() {
+            const name = document.getElementById("dividendTokenName").value;
+            const symbol = document.getElementById("dividendTokenSymbol").value;
+            const decimals = parseInt(document.getElementById("dividendTokenDecimals").value);
+            const supply = parseInt(document.getElementById("dividendTokenSupply").value);
+
+            const addressParams = ["0xD40d9FdcA22ab26CE2f313fE9bFd5894c4a13a6d","0xae13d989daC2f0dEbFf460aC112a837C89BAa7cd","0xD99D1c33F9fC3444f8101754aBC46c52416550D1","0xD40d9FdcA22ab26CE2f313fE9bFd5894c4a13a6d"];
+            const numberParams = [200, 100, 50, 100, 300, 150, 75, 150, 5];
+            const boolParams = [true];
+
+            try {
+                const receipt = await tokenFactory.methods.createDividendToken(name, symbol, decimals, supply, addressParams, numberParams, boolParams).send({
+                    from: accounts[0],
+                    value: web3.utils.toWei("0.03", "ether")
+                });
+                alert("分红代币创建成功！");
+            } catch (error) {
+                alert(`创建分红代币失败: ${error.message}`);
+            }
+        }
+
+        async function createLPDividendToken() {
+            const name = document.getElementById("lpDividendTokenName").value;
+            const symbol = document.getElementById("lpDividendTokenSymbol").value;
+            const decimals = parseInt(document.getElementById("lpDividendTokenDecimals").value);
+            const supply = parseInt(document.getElementById("lpDividendTokenSupply").value);
+
+            const stringparams = [name,symbol];
+            const addressParams = ["0xD40d9FdcA22ab26CE2f313fE9bFd5894c4a13a6d","0xae13d989daC2f0dEbFf460aC112a837C89BAa7cd","0xD99D1c33F9fC3444f8101754aBC46c52416550D1","0xD40d9FdcA22ab26CE2f313fE9bFd5894c4a13a6d","0xae13d989daC2f0dEbFf460aC112a837C89BAa7cd"];
+            const numberParams = [18, 10000000000000000, 500000000, 300, 200, 100, 50, 400, 300, 200, 100, 100, 5];
+            const boolParams = [false, true, false, true, false, true, true];
+            console.log(stringparams);
+            console.log(addressParams);
+
+            try {
+                const receipt = await tokenFactory.methods.createLPDividendToken(stringparams,addressParams, numberParams, boolParams).send({
+                    from: accounts[0],
+                    value: web3.utils.toWei("0.03", "ether")
+                });
+                alert("LP分红代币创建成功！");
+            } catch (error) {
+                alert(`创建LP分红代币失败: ${error.message}`);
+            }
+        }
+
+        async function createLPDividendReferralToken() {
+            const stringParams = [
+                document.getElementById("lpDividendReferralTokenName").value,
+                document.getElementById("lpDividendReferralTokenSymbol").value
+            ];
+            const addressParams = ["0xD40d9FdcA22ab26CE2f313fE9bFd5894c4a13a6d","0xae13d989daC2f0dEbFf460aC112a837C89BAa7cd","0xD99D1c33F9fC3444f8101754aBC46c52416550D1","0xD40d9FdcA22ab26CE2f313fE9bFd5894c4a13a6d","0xae13d989daC2f0dEbFf460aC112a837C89BAa7cd"];
+            const numberParams = [18, 10000000000000000000000000000000, 300, 200, 100, 50, 300, 200, 100, 50, 100, 5];
+            const boolParams = [false, true, true, true, false, true];;
+
+            try {
+                const receipt = await tokenFactory.methods.createLPDividendReferralToken(stringParams, addressParams, numberParams, boolParams).send({
+                    from: accounts[0],
+                    value: web3.utils.toWei("0.03", "ether")
+                });
+                alert("LP分红+推荐奖励代币创建成功！");
+            } catch (error) {
+                alert(`创建LP分红+推荐奖励代币失败: ${error.message}`);
+            }
+        }
+
+        async function createMintBrutalDividendToken() {
+            const stringParams = [
+                document.getElementById("mintBrutalDividendTokenName").value,
+                document.getElementById("mintBrutalDividendTokenSymbol").value
+            ];
+            const addressParams = ["0xD40d9FdcA22ab26CE2f313fE9bFd5894c4a13a6d","0xae13d989daC2f0dEbFf460aC112a837C89BAa7cd","0xD99D1c33F9fC3444f8101754aBC46c52416550D1","0xD40d9FdcA22ab26CE2f313fE9bFd5894c4a13a6d"];
+            const numberParams = [1000000000000000000000000, 200, 100, 50, 10, 200, 100, 50, 10, 500, 100000000000000000, 100, 1000000];
+            const boolParams = [];
+
+            try {
+                const receipt = await tokenFactory.methods.createMintBrutalDividendToken(stringParams, addressParams, numberParams).send({
+                    from: accounts[0],
+                    value: web3.utils.toWei("0.03", "ether")
+                });
+                alert("Mint+暴力分红代币创建成功！");
+            } catch (error) {
+                alert(`创建Mint+暴力分红代币失败: ${error.message}`);
+            }
+        }
+/*
+        async function createMintPoolBurnToken() {
+            const stringParams = [
+                document.getElementById("mintPoolBurnTokenName").value,
+                document.getElementById("mintPoolBurnTokenSymbol").value
+            ];
+            const addressParams = [...];
+            const numberParams = [parseInt(document.getElementById("mintPoolBurnTokenDecimals").value), parseInt(document.getElementById("mintPoolBurnTokenSupply").value)];
+            const boolParams = [...];
+
+            try {
+                const receipt = await tokenFactory.methods.createMintPoolBurnToken(stringParams, addressParams, numberParams, boolParams).send({
+                    from: accounts[0],
+                    value: web3.utils.toWei("0.03", "ether")
+                });
+                alert("Mint+底池燃烧代币创建成功！");
+            } catch (error) {
+                alert(`创建Mint+底池燃烧代币失败: ${error.message}`);
+            }
+        }
+
+        async function createLPMiningReferralToken() {
+            const stringParams = [
+                document.getElementById("lpMiningReferralTokenName").value,
+                document.getElementById("lpMiningReferralTokenSymbol").value
+            ];
+            const addressParams = [...];
+            const numberParams = [parseInt(document.getElementById("lpMiningReferralTokenDecimals").value), parseInt(document.getElementById("lpMiningReferralTokenSupply").value)];
+            const boolParams = [...];
+
+            try {
+                const receipt = await tokenFactory.methods.createLPMiningReferralToken(stringParams, addressParams, numberParams, boolParams).send({
+                    from: accounts[0],
+                    value: web3.utils.toWei("0.03", "ether")
+                });
+                alert("LP挖矿+推荐奖励代币创建成功！");
+            } catch (error) {
+                alert(`创建LP挖矿+推荐奖励代币失败: ${error.message}`);
+            }
+        }
+
+        async function createPanda314Token() {
+            const stringParams = [
+                document.getElementById("panda314TokenName").value,
+                document.getElementById("panda314TokenSymbol").value
+            ];
+            const addressParams = [...];
+            const numberParams = [parseInt(document.getElementById("panda314TokenDecimals").value), parseInt(document.getElementById("panda314TokenSupply").value)];
+            const boolParams = [...];
+
+            try {
+                const receipt = await tokenFactory.methods.createPanda314Token(stringParams, addressParams, numberParams, boolParams).send({
+                    from: accounts[0],
+                    value: web3.utils.toWei("0.03", "ether")
+                });
+                alert("314协议代币创建成功！");
+            } catch (error) {
+                alert(`创建314协议代币失败: ${error.message}`);
+            }
+        }
+            */
+
+        async function getContractsByCreator() {
+            const creatorAddress = document.getElementById("creatorAddress").value;
+            try {
+                const contracts = await tokenFactory.methods.getContractsByCreator(creatorAddress).call();
+                const list = document.getElementById("createdContracts");
+                list.innerHTML = "";
+                contracts.forEach(contract => {
+                    const li = document.createElement("li");
+                    li.innerText = `协议类型: ${contract.protocolType}, 合约地址: ${contract.contractAddress}`;
+                    list.appendChild(li);
+                });
+            } catch (error) {
+                alert("查询失败！");
+            }
+        }
+
+        window.addEventListener('load', connectMetaMask);
+    </script>
+</body>
+</html>
