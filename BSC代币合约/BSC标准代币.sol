@@ -227,24 +227,6 @@ contract PandaToken is Context, IERC20 {
     // 标记是否已经初始化
     bool private _initialized;
 
-    constructor(
-        string[] memory stringParams,
-        address[] memory addressParams,
-        uint256[] memory numberParams,
-        bool[] memory boolParams
-    ) {
-        require(addressParams.length == 0);
-        require(boolParams.length == 0);
-
-        address receiveAddr = tx.origin;
-        _name = stringParams[0];
-        _symbol = stringParams[1];
-        _decimals = numberParams[0];
-        _totalSupply = numberParams[1];
-        _balances[receiveAddr] = _totalSupply;
-        emit Transfer(address(0), receiveAddr, _totalSupply);
-    }
-
     function initialize(
         string memory name_,
         string memory symbol_,
