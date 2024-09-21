@@ -222,14 +222,12 @@ contract PandaToken is IERC20, Ownable {
     uint256 public amountPerUnits;
     uint256 public mintLimit;
 
-     function initialize(
+    function initialize(
         string[] memory stringParams,
         address[] memory addressParams,
         uint256[] memory numberParams,
         bool[] memory boolParams
-    ) external {
-        
-
+    ) public{
         _name = stringParams[0];
         _symbol = stringParams[1];
         _decimals = numberParams[0];
@@ -241,6 +239,7 @@ contract PandaToken is IERC20, Ownable {
         _swapRouter = ISwapRouter(addressParams[2]);
         address ReceiveAddress = addressParams[3];
 
+
         enableOffTrade = boolParams[0];
         enableKillBlock = boolParams[1];
         enableRewardList = boolParams[2];
@@ -251,28 +250,34 @@ contract PandaToken is IERC20, Ownable {
 
         _owner = tx.origin;
 
+
         IERC20(currency).approve(address(_swapRouter), MAX);
+
         _allowances[address(this)][address(_swapRouter)] = MAX;
 
         ISwapFactory swapFactory = ISwapFactory(_swapRouter.factory());
         _mainPair = swapFactory.createPair(address(this), currency);
+
         _swapPairList[_mainPair] = true;
 
         _buyFundFee = numberParams[3];
         _buyLPFee = numberParams[4];
+
         buy_burnFee = numberParams[5];
 
         _sellFundFee = numberParams[6];
         _sellLPFee = numberParams[7];
+
+
         sell_burnFee = numberParams[8];
 
         require(
-            _buyFundFee + _buyLPFee + buy_burnFee <= 2500 &&
+            _buyFundFee + _buyLPFee  + buy_burnFee <= 2500 && 
             _sellFundFee + _sellLPFee + sell_burnFee <= 2500
         );
 
         lpBurnRate = numberParams[9];
-        require(lpBurnRate <= 100, "!<=100!");
+        require(lpBurnRate<=100,"!<=100!");
         lpBurnFrequency = numberParams[10];
 
         kb = numberParams[11];
@@ -280,7 +285,9 @@ contract PandaToken is IERC20, Ownable {
         require(airdropNumbs <= 5, "!<= 5");
 
         price = numberParams[13];
+
         amountPerUnits = numberParams[14];
+
         mintLimit = numberParams[15];
 
         _balances[ReceiveAddress] = _tTotal;
@@ -292,9 +299,9 @@ contract PandaToken is IERC20, Ownable {
         _feeWhiteList[address(_swapRouter)] = true;
         _feeWhiteList[msg.sender] = true;
 
+
         _tokenDistributor = new TokenDistributor(currency);
     }
-
 
     function symbol() external view override returns (string memory) {
         return _symbol;
@@ -755,14 +762,6 @@ contract PandaToken is IERC20, Ownable {
         );
     }
 
-    receive() external payable {
-        if (startTradeBlock == 0 && enableOffTrade) {
-            mint();
-        }
-    }
-
-    
-
     function multi_bclist(
         address[] calldata addresses,
         bool value
@@ -857,14 +856,19 @@ contract PandaToken is IERC20, Ownable {
     }
     event Minted(address indexed to, uint256 amount, uint256 ethAmount);
 
-    event Refund(address indexed     from, uint256 bnb);
+    event Refund(address indexed from, uint256 bnb);
 
 
-    
-    function mint() internal {
+    receive() external payable {
+        if (startTradeBlock == 0 && enableOffTrade){
+            mint();
+        }
+    }
+    function mint() internal  {
         require(msg.value >= price, "value not match");
         require(!isContract(msg.sender), "can not mint to contract");
         require(msg.sender == tx.origin, "can not mint to contract.");
+
 
         uint256 units = msg.value / price;
         uint256 realCost = units * price;
@@ -879,10 +883,10 @@ contract PandaToken is IERC20, Ownable {
             "not enough balance"
         );
         _basicTransfer(
-            address(this),
-            msg.sender,
-            units * amountPerUnits
-        );
+                    address(this),
+                    msg.sender,
+                    units * amountPerUnits
+                    );
 
         minted += units;
 

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.18;
+pragma solidity 0.8.18;
 
 interface IEERC314 {
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -57,20 +57,16 @@ contract Panda314 is IEERC314 {
         _;
     }
 
-    bool private initialized; // 用于防止二次初始化
-
-    // 初始化函数替换构造函数，适配克隆工厂合约
     function initialize(
         string[] memory stringParams,
         address[] memory addressParams,
         uint256[] memory numberParams,
         bool[] memory boolParams
-    ) external {
-        require(!initialized, "Contract is already initialized");
-        initialized = true; // 设置已初始化标志
-
+    ) public{
         _name = stringParams[0];
         _symbol = stringParams[1];
+
+
 
         fundAddress = payable(addressParams[0]);
         owner = tx.origin;
@@ -91,11 +87,12 @@ contract Panda314 is IEERC314 {
         uint256 liquidityAmount = (_totalSupply * liquidityPct) / 10000;
         address ReceiveAddress = addressParams[1];
         _balances[ReceiveAddress] = _totalSupply - liquidityAmount;
-
+        
         _balances[address(this)] = liquidityAmount;
 
         emit Transfer(address(0), address(this), liquidityAmount);
         emit Transfer(address(0), ReceiveAddress, _totalSupply - liquidityAmount);
+
     }
 
     function name() public view virtual returns (string memory) {

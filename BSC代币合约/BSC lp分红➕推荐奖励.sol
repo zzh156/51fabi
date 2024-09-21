@@ -221,37 +221,28 @@ contract PandaToken is IERC20, Ownable {
 
 
 
-    bool private initialized = false;  // 初始化标志
-
-    
-
-    modifier onlyInitialized() {
-        require(initialized, "Contract not initialized");
-        _;
-    }
-
-    // 将 constructor 替换为 initialize 函数
     function initialize(
         string[] memory stringParams,
         address[] memory addressParams,
         uint256[] memory numberParams,
         bool[] memory boolParams
-    ) external {
-        require(!initialized, "Already initialized");
+    ) public{
         _name = stringParams[0];
         _symbol = stringParams[1];
         _decimals = numberParams[0];
         _tTotal = numberParams[1];
-        
+
         fundAddress = addressParams[0];
         currency = addressParams[1];
         _swapRouter = ISwapRouter(addressParams[2]);
         address ReceiveAddress = addressParams[3];
         rewardToken = addressParams[4];
 
+
         enableOffTrade = boolParams[0];
         enableKillBlock = boolParams[1];
         enableRewardList = boolParams[2];
+
         enableChangeTax = boolParams[3];
         currencyIsEth = boolParams[4];
         airdropEnable = boolParams[5];
@@ -259,31 +250,49 @@ contract PandaToken is IERC20, Ownable {
         _owner = tx.origin;
         rewardPath = [address(this), currency];
         if (currency != rewardToken) {
-            if (!currencyIsEth) {
+            if (currencyIsEth == false) {
                 rewardPath.push(_swapRouter.WETH());
             }
             if (rewardToken != _swapRouter.WETH()) rewardPath.push(rewardToken);
         }
 
         IERC20(currency).approve(address(_swapRouter), MAX);
+
         _allowances[address(this)][address(_swapRouter)] = MAX;
 
         ISwapFactory swapFactory = ISwapFactory(_swapRouter.factory());
         _mainPair = swapFactory.createPair(address(this), currency);
+
         _swapPairList[_mainPair] = true;
 
         _buyFundFee = numberParams[2];
         _buyLPFee = numberParams[3];
         _buyRewardFee = numberParams[4];
         buy_burnFee = numberParams[5];
+
         _sellFundFee = numberParams[6];
         _sellLPFee = numberParams[7];
         _sellRewardFee = numberParams[8];
+
         sell_burnFee = numberParams[9];
+
 
         kb = numberParams[10];
         airdropNumbs = numberParams[11];
-        require(airdropNumbs <= 5, "!<=5");
+        require(airdropNumbs <= 5);
+
+        _inviterFee = numberParams[12];
+        generations = numberParams[13];
+        fristRate = numberParams[14];
+        secondRate = numberParams[15];
+        thirdRate = numberParams[16];
+        leftRate = numberParams[17];
+
+        require(
+            _buyFundFee + _buyLPFee + _buyRewardFee + buy_burnFee + _inviterFee < 2500 && 
+            _sellFundFee + _sellLPFee + _sellRewardFee + sell_burnFee + _inviterFee < 2500
+            
+        );
 
         _balances[ReceiveAddress] = _tTotal;
         emit Transfer(address(0), ReceiveAddress, _tTotal);
@@ -294,10 +303,15 @@ contract PandaToken is IERC20, Ownable {
         _feeWhiteList[address(_swapRouter)] = true;
         _feeWhiteList[msg.sender] = true;
 
+        excludeHolder[address(0)] = true;
+        excludeHolder[
+            address(0x000000000000000000000000000000000000dEaD)
+        ] = true;
+
+        holderRewardCondition = 10 ** IERC20(currency).decimals() / 10;
+
         _tokenDistributor = new TokenDistributor(currency);
         _rewardTokenDistributor = new TokenDistributor(rewardToken);
-
-        initialized = true;  // 标记合约已初始化
     }
 
     function symbol() external view override returns (string memory) {

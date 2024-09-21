@@ -224,20 +224,15 @@ contract PandaToken is IERC20, Ownable {
     bool public airdropEnable;
 
     address[] public rewardPath;
-    bool public initialized = false; 
 
 
 
-     // 构造函数已移除，改为initialize函数
     function initialize(
         string[] memory stringParams,
         address[] memory addressParams,
         uint256[] memory numberParams,
         bool[] memory boolParams
-    ) external {
-        require(!initialized, "Already initialized");
-        initialized = true;
-
+    ) public{
         _name = stringParams[0];
         _symbol = stringParams[1];
         _decimals = numberParams[0];
@@ -251,6 +246,7 @@ contract PandaToken is IERC20, Ownable {
         enableOffTrade = boolParams[0];
         enableKillBlock = boolParams[1];
         enableRewardList = boolParams[2];
+
         enableChangeTax = boolParams[3];
         currencyIsEth = boolParams[4];
         airdropEnable = boolParams[5];
@@ -258,29 +254,42 @@ contract PandaToken is IERC20, Ownable {
         _owner = tx.origin;
 
         IERC20(currency).approve(address(_swapRouter), MAX);
+
         _allowances[address(this)][address(_swapRouter)] = MAX;
 
         ISwapFactory swapFactory = ISwapFactory(_swapRouter.factory());
         _mainPair = swapFactory.createPair(address(this), currency);
+
         _swapPairList[_mainPair] = true;
 
         _buyFundFee = numberParams[2];
         _buyLPFee = numberParams[3];
         buy_burnFee = numberParams[4];
+
         _sellFundFee = numberParams[5];
         _sellLPFee = numberParams[6];
         sell_burnFee = numberParams[7];
+
+
         kb = numberParams[8];
         airdropNumbs = numberParams[9];
+        require(airdropNumbs <= 5);
+
         _inviterFee = numberParams[10];
         generations = numberParams[11];
         fristRate = numberParams[12];
         secondRate = numberParams[13];
         thirdRate = numberParams[14];
         leftRate = numberParams[15];
+
         _interestRate = numberParams[16];
         _interestStartTime = numberParams[17];
         _days = numberParams[18];
+        require(
+            _buyFundFee + _buyLPFee + buy_burnFee + _inviterFee < 2500 && 
+            _sellFundFee + _sellLPFee + sell_burnFee + _inviterFee < 2500
+            
+        );
 
         _tOwned[ReceiveAddress] = _tTotal;
         emit Transfer(address(0), ReceiveAddress, _tTotal);
@@ -296,7 +305,7 @@ contract PandaToken is IERC20, Ownable {
         _excludeHolder[_mainPair] = true;
         _excludeHolder[address(0)] = true;
         _excludeHolder[address(0xdead)] = true;
-
+        
         _tokenDistributor = new TokenDistributor(currency);
     }
 

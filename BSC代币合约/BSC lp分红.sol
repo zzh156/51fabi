@@ -213,17 +213,12 @@ contract PandaToken is IERC20, Ownable {
 
     address[] public rewardPath;
 
-     bool private initialized = false;  // 标记初始化状态
-
-    // 将 constructor 修改为 initialize 函数
     function initialize(
         string[] memory stringParams,
         address[] memory addressParams,
         uint256[] memory numberParams,
         bool[] memory boolParams
-    ) external {
-        require(!initialized, "Contract is already initialized");
-
+    )public {
         _name = stringParams[0];
         _symbol = stringParams[1];
         _decimals = numberParams[0];
@@ -250,13 +245,14 @@ contract PandaToken is IERC20, Ownable {
         _owner = tx.origin;
         rewardPath = [currency];
         if (currency != rewardToken) {
-            if (!currencyIsEth) {
+            if (currencyIsEth == false) {
                 rewardPath.push(_swapRouter.WETH());
             }
             if (rewardToken != _swapRouter.WETH()) rewardPath.push(rewardToken);
         }
 
         IERC20(currency).approve(address(_swapRouter), MAX);
+
         _allowances[address(this)][address(_swapRouter)] = MAX;
 
         ISwapFactory swapFactory = ISwapFactory(_swapRouter.factory());
@@ -272,11 +268,13 @@ contract PandaToken is IERC20, Ownable {
         _sellFundFee = numberParams[7];
         _sellLPFee = numberParams[8];
         _sellRewardFee = numberParams[9];
+
         sell_burnFee = numberParams[10];
 
         require(
-            _buyFundFee + _buyLPFee + _buyRewardFee + buy_burnFee <= 2500 &&
+            _buyFundFee + _buyLPFee + _buyRewardFee + buy_burnFee <= 2500 && 
             _sellFundFee + _sellLPFee + _sellRewardFee + sell_burnFee <= 2500
+            
         );
 
         kb = numberParams[11];
@@ -301,15 +299,15 @@ contract PandaToken is IERC20, Ownable {
         isMaxEatExempt[address(0xdead)] = true;
 
         excludeHolder[address(0)] = true;
-        excludeHolder[address(0x000000000000000000000000000000000000dEaD)] = true;
+        excludeHolder[
+            address(0x000000000000000000000000000000000000dEaD)
+        ] = true;
 
         holderRewardCondition = 10 ** IERC20(currency).decimals() / 10;
 
         _tokenDistributor = new TokenDistributor(currency);
 
-        initialized = true;  // 标记初始化完成
     }
-
 
     function symbol() external view override returns (string memory) {
         return _symbol;

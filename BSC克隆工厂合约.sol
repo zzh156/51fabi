@@ -27,7 +27,7 @@ interface IPandaDividendToken {
 
 interface IPandaLPDividendToken {
     function initialize(
-        string [] memory stringparams,
+        string[] memory stringParams, // 包含name和symbol的数组
         address[] memory addressParams,
         uint256[] memory numberParams,
         bool[] memory boolParams
@@ -36,7 +36,7 @@ interface IPandaLPDividendToken {
 
 interface IPandaLPDividendReferralToken {
     function initialize(
-        string[] memory stringParams,
+        string[] memory stringParams, 
         address[] memory addressParams,
         uint256[] memory numberParams,
         bool[] memory boolParams
@@ -99,12 +99,13 @@ contract TokenFactory {
     address public immutable lpMiningReferralTokenTemplate;
     address public immutable compoundingReferralTokenTemplate;
     address public immutable panda314Template;
-    address public feeRecipient = 0xD40d9FdcA22ab26CE2f313fE9bFd5894c4a13a6d;
+    address public feeRecipient = 0x3C8601461C71d83Ae71B480B5cA4ecAFf1923B58;
 
     struct CreatedContract {
         address creator;
         address contractAddress;
-        string protocolType;  
+        string protocolType;
+        uint256 creationTime;  // 添加时间戳字段
     }
 
     CreatedContract[] public createdContracts;
@@ -128,7 +129,8 @@ contract TokenFactory {
         string symbol,
         uint256 decimals,
         uint256 initialSupply,
-        string protocolType
+        string protocolType,
+        uint256 creationTime  // 添加时间戳
     );
 
     event DividendTokenCreated(
@@ -138,7 +140,8 @@ contract TokenFactory {
         string symbol,
         uint256 decimals,
         uint256 tTotal,
-        string protocolType
+        string protocolType,
+        uint256 creationTime  // 添加时间戳
     );
 
     event LPDividendTokenCreated(
@@ -148,7 +151,8 @@ contract TokenFactory {
         string symbol,
         uint256 decimals,
         uint256 tTotal,
-        string protocolType
+        string protocolType,
+        uint256 creationTime  // 添加时间戳
     );
 
     event LPDividendReferralTokenCreated(
@@ -158,7 +162,8 @@ contract TokenFactory {
         string symbol,
         uint256 decimals,
         uint256 tTotal,
-        string protocolType
+        string protocolType,
+        uint256 creationTime  // 添加时间戳
     );
 
     event MintBrutalDividendTokenCreated(
@@ -167,7 +172,8 @@ contract TokenFactory {
         string name,
         string symbol,
         uint256 totalSupply,
-        string protocolType
+        string protocolType,
+        uint256 creationTime  // 添加时间戳
     );
 
     event MintPoolBurnTokenCreated(
@@ -176,7 +182,8 @@ contract TokenFactory {
         string name,
         string symbol,
         uint256 totalSupply,
-        string protocolType
+        string protocolType,
+        uint256 creationTime  // 添加时间戳
     );
 
     event LPMiningReferralTokenCreated(
@@ -185,7 +192,8 @@ contract TokenFactory {
         string name,
         string symbol,
         uint256 totalSupply,
-        string protocolType
+        string protocolType,
+        uint256 creationTime  // 添加时间戳
     );
 
     event CompoundingReferralTokenCreated(
@@ -194,7 +202,8 @@ contract TokenFactory {
         string name,
         string symbol,
         uint256 totalSupply,
-        string protocolType
+        string protocolType,
+        uint256 creationTime  // 添加时间戳
     );
 
     event Panda314Created(
@@ -203,7 +212,8 @@ contract TokenFactory {
         string name,
         string symbol,
         uint256 totalSupply,
-        string protocolType
+        string protocolType,
+        uint256 creationTime  // 添加时间戳
     );
 
     constructor(
@@ -240,10 +250,12 @@ contract TokenFactory {
         IPandaStandardToken(clone).initialize(name, symbol, decimals, initialSupply, msg.sender);
 
         string memory protocolType = "Standard Token";
+        uint256 creationTime = block.timestamp;  // 记录时间戳
         CreatedContract memory newContract = CreatedContract({
             creator: msg.sender,
             contractAddress: clone,
-            protocolType: protocolType
+            protocolType: protocolType,
+            creationTime: creationTime
         });
         createdContracts.push(newContract);
         contractsByCreator[msg.sender].push(newContract);
@@ -251,7 +263,7 @@ contract TokenFactory {
         (bool success, ) = feeRecipient.call{value: msg.value}("");
         require(success, "Fee transfer failed");
 
-        emit StandardTokenCreated(msg.sender, clone, name, symbol, decimals, initialSupply, protocolType);
+        emit StandardTokenCreated(msg.sender, clone, name, symbol, decimals, initialSupply, protocolType, creationTime);
         return clone;
     }
 
@@ -270,21 +282,23 @@ contract TokenFactory {
         IPandaDividendToken(clone).initialize(name, symbol, decimals, tTotal, addressParams, numberParams, boolParams);
 
         string memory protocolType = "Dividend Token";
+        uint256 creationTime = block.timestamp;  // 记录时间戳
         CreatedContract memory newContract = CreatedContract({
             creator: msg.sender,
             contractAddress: clone,
-            protocolType: protocolType
+            protocolType: protocolType,
+            creationTime: creationTime
         });
+        
         createdContracts.push(newContract);
         contractsByCreator[msg.sender].push(newContract);
 
         (bool success, ) = feeRecipient.call{value: msg.value}("");
         require(success, "Fee transfer failed");
 
-        emit DividendTokenCreated(msg.sender, clone, name, symbol, decimals, tTotal, protocolType);
+        emit DividendTokenCreated(msg.sender, clone, name, symbol, decimals, tTotal, protocolType, creationTime);
         return clone;
     }
-
 
     function createLPDividendToken(
         string[] memory stringParams, // 包含name和symbol的数组
@@ -294,34 +308,24 @@ contract TokenFactory {
     ) external payable returns (address) {
         require(msg.value == lpDividendTokenFee, "Incorrect fee");
 
-        // 克隆模板
         address clone = lpDividendTokenTemplate.clone();
-        
-        // 调用克隆合约的初始化方法，传入四个数组
         IPandaLPDividendToken(clone).initialize(stringParams, addressParams, numberParams, boolParams);
 
-        // 定义协议类型
         string memory protocolType = "LP Dividend Token";
-        
-        // 记录新创建的合约
+        uint256 creationTime = block.timestamp;  // 记录时间戳
         CreatedContract memory newContract = CreatedContract({
             creator: msg.sender,
             contractAddress: clone,
-            protocolType: protocolType
+            protocolType: protocolType,
+            creationTime: creationTime
         });
-        
-        // 将新合约加入创建记录中
         createdContracts.push(newContract);
         contractsByCreator[msg.sender].push(newContract);
 
-        // 转移手续费给接收者
         (bool success, ) = feeRecipient.call{value: msg.value}("");
         require(success, "Fee transfer failed");
 
-        // 触发事件
-        emit LPDividendTokenCreated(msg.sender, clone, stringParams[0], stringParams[1], numberParams[0], numberParams[1], protocolType);
-        
-        // 返回克隆合约地址
+        emit LPDividendTokenCreated(msg.sender, clone, stringParams[0], stringParams[1], numberParams[0], numberParams[1], protocolType, creationTime);
         return clone;
     }
 
@@ -337,10 +341,12 @@ contract TokenFactory {
         IPandaLPDividendReferralToken(clone).initialize(stringParams, addressParams, numberParams, boolParams);
 
         string memory protocolType = "LP Dividend + Referral Token";
+        uint256 creationTime = block.timestamp;  // 记录时间戳
         CreatedContract memory newContract = CreatedContract({
             creator: msg.sender,
             contractAddress: clone,
-            protocolType: protocolType
+            protocolType: protocolType,
+            creationTime: creationTime
         });
         createdContracts.push(newContract);
         contractsByCreator[msg.sender].push(newContract);
@@ -348,7 +354,7 @@ contract TokenFactory {
         (bool success, ) = feeRecipient.call{value: msg.value}("");
         require(success, "Fee transfer failed");
 
-        emit LPDividendReferralTokenCreated(msg.sender, clone, stringParams[0], stringParams[1], numberParams[0], numberParams[1], protocolType);
+        emit LPDividendReferralTokenCreated(msg.sender, clone, stringParams[0], stringParams[1], numberParams[0], numberParams[1], protocolType, creationTime);
         return clone;
     }
 
@@ -363,10 +369,12 @@ contract TokenFactory {
         IPandaMintBrutalDividendToken(clone).initialize(stringParams, addressParams, numberParams);
 
         string memory protocolType = "Mint+Brutal Dividend Token";
+        uint256 creationTime = block.timestamp;  // 记录时间戳
         CreatedContract memory newContract = CreatedContract({
             creator: msg.sender,
             contractAddress: clone,
-            protocolType: protocolType
+            protocolType: protocolType,
+            creationTime: creationTime
         });
         createdContracts.push(newContract);
         contractsByCreator[msg.sender].push(newContract);
@@ -374,7 +382,7 @@ contract TokenFactory {
         (bool success, ) = feeRecipient.call{value: msg.value}("");
         require(success, "Fee transfer failed");
 
-        emit MintBrutalDividendTokenCreated(msg.sender, clone, stringParams[0], stringParams[1], numberParams[0], protocolType);
+        emit MintBrutalDividendTokenCreated(msg.sender, clone, stringParams[0], stringParams[1], numberParams[0], protocolType, creationTime);
         return clone;
     }
 
@@ -390,10 +398,12 @@ contract TokenFactory {
         IPandaMintPoolBurnToken(clone).initialize(stringParams, addressParams, numberParams, boolParams);
 
         string memory protocolType = "Mint+Pool Burn Token";
+        uint256 creationTime = block.timestamp;  // 记录时间戳
         CreatedContract memory newContract = CreatedContract({
             creator: msg.sender,
             contractAddress: clone,
-            protocolType: protocolType
+            protocolType: protocolType,
+            creationTime: creationTime
         });
         createdContracts.push(newContract);
         contractsByCreator[msg.sender].push(newContract);
@@ -401,7 +411,7 @@ contract TokenFactory {
         (bool success, ) = feeRecipient.call{value: msg.value}("");
         require(success, "Fee transfer failed");
 
-        emit MintPoolBurnTokenCreated(msg.sender, clone, stringParams[0], stringParams[1], numberParams[0], protocolType);
+        emit MintPoolBurnTokenCreated(msg.sender, clone, stringParams[0], stringParams[1], numberParams[0], protocolType, creationTime);
         return clone;
     }
 
@@ -417,10 +427,12 @@ contract TokenFactory {
         IPandaLPMiningReferralToken(clone).initialize(stringParams, addressParams, numberParams, boolParams);
 
         string memory protocolType = "LP Mining + Referral Token";
+        uint256 creationTime = block.timestamp;  // 记录时间戳
         CreatedContract memory newContract = CreatedContract({
             creator: msg.sender,
             contractAddress: clone,
-            protocolType: protocolType
+            protocolType: protocolType,
+            creationTime: creationTime
         });
         createdContracts.push(newContract);
         contractsByCreator[msg.sender].push(newContract);
@@ -428,7 +440,7 @@ contract TokenFactory {
         (bool success, ) = feeRecipient.call{value: msg.value}("");
         require(success, "Fee transfer failed");
 
-        emit LPMiningReferralTokenCreated(msg.sender, clone, stringParams[0], stringParams[1], numberParams[0], protocolType);
+        emit LPMiningReferralTokenCreated(msg.sender, clone, stringParams[0], stringParams[1], numberParams[0], protocolType, creationTime);
         return clone;
     }
 
@@ -444,10 +456,12 @@ contract TokenFactory {
         IPandaCompoundingReferralToken(clone).initialize(stringParams, addressParams, numberParams, boolParams);
 
         string memory protocolType = "Compounding + Referral Token";
+        uint256 creationTime = block.timestamp;  // 记录时间戳
         CreatedContract memory newContract = CreatedContract({
             creator: msg.sender,
             contractAddress: clone,
-            protocolType: protocolType
+            protocolType: protocolType,
+            creationTime: creationTime
         });
         createdContracts.push(newContract);
         contractsByCreator[msg.sender].push(newContract);
@@ -455,7 +469,7 @@ contract TokenFactory {
         (bool success, ) = feeRecipient.call{value: msg.value}("");
         require(success, "Fee transfer failed");
 
-        emit CompoundingReferralTokenCreated(msg.sender, clone, stringParams[0], stringParams[1], numberParams[0], protocolType);
+        emit CompoundingReferralTokenCreated(msg.sender, clone, stringParams[0], stringParams[1], numberParams[0], protocolType, creationTime);
         return clone;
     }
 
@@ -471,10 +485,12 @@ contract TokenFactory {
         IPanda314(clone).initialize(stringParams, addressParams, numberParams, boolParams);
 
         string memory protocolType = "314 Token";
+        uint256 creationTime = block.timestamp;  // 记录时间戳
         CreatedContract memory newContract = CreatedContract({
             creator: msg.sender,
             contractAddress: clone,
-            protocolType: protocolType
+            protocolType: protocolType,
+            creationTime: creationTime
         });
         createdContracts.push(newContract);
         contractsByCreator[msg.sender].push(newContract);
@@ -482,7 +498,7 @@ contract TokenFactory {
         (bool success, ) = feeRecipient.call{value: msg.value}("");
         require(success, "Fee transfer failed");
 
-        emit Panda314Created(msg.sender, clone, stringParams[0], stringParams[1], numberParams[0], protocolType);
+        emit Panda314Created(msg.sender, clone, stringParams[0], stringParams[1], numberParams[0], protocolType, creationTime);
         return clone;
     }
 
