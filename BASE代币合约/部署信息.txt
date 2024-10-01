@@ -1,0 +1,5 @@
+base mainnet:
+
+标准代币地址：0x263e1bca1fa6f39b269e0ab2242d5f10879b2088
+分红本币地址: 0x24dc949a47fc95734ec99e759de27af81a03fb34
+clone工厂合约:0xd78939bcc62b297555aceaf3cc45a0574d12f804

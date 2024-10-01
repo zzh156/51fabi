@@ -1,0 +1,6 @@
+arb主网：
+
+arb标准代币合约：0x263e1bca1fa6f39b269e0ab2242d5f10879b2088
+arb分红本币合约：0x24dc949a47fc95734ec99e759de27af81a03fb34
+
+clone工厂合约：0xd78939bcc62b297555aceaf3cc45a0574d12f804

@@ -3,7 +3,7 @@
 //  The Best Tool for Token Management
 
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.18;
+pragma solidity ^0.8.1;
 
 
 contract Context {

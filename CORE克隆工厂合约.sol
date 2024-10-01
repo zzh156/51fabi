@@ -94,11 +94,9 @@ contract TokenFactory {
     address public immutable dividendTokenTemplate;
     address public immutable lpDividendTokenTemplate;
     address public immutable lpDividendReferralTokenTemplate;
-    address public immutable mintBrutalDividendTokenTemplate;
-    address public immutable mintPoolBurnTokenTemplate;
     address public immutable lpMiningReferralTokenTemplate;
     address public immutable compoundingReferralTokenTemplate;
-    address public immutable panda314Template;
+    
     address public feeRecipient = 0x2fa5fBC3472F75A99559F9e6A0aD02cd7132a3c0;
 
     struct CreatedContract {
@@ -112,15 +110,13 @@ contract TokenFactory {
     mapping(address => CreatedContract[]) public contractsByCreator;
 
     // 定义不同协议的费用标准
-    uint256 public constant standardTokenFee = 0.04 ether;
-    uint256 public constant dividendTokenFee = 0.05 ether;
-    uint256 public constant lpDividendTokenFee = 0.1 ether;
-    uint256 public constant lpDividendReferralTokenFee = 0.11 ether;
-    uint256 public constant panda314Fee = 0.12 ether;
-    uint256 public constant compoundingReferralTokenFee = 0.14 ether;
-    uint256 public constant mintBrutalDividendTokenFee = 0.13 ether;
-    uint256 public constant mintPoolBurnTokenFee = 0.15 ether;
-    uint256 public constant lpMiningReferralTokenFee = 0.18 ether;
+    uint256 public constant standardTokenFee = 10 ether;
+    uint256 public constant dividendTokenFee = 14 ether;
+    uint256 public constant lpDividendTokenFee = 19 ether;
+
+    uint256 public constant lpDividendReferralTokenFee = 28 ether;
+    uint256 public constant compoundingReferralTokenFee = 28 ether;
+    uint256 public constant lpMiningReferralTokenFee = 38 ether;
 
     event StandardTokenCreated(
         address indexed creator,
@@ -166,25 +162,6 @@ contract TokenFactory {
         uint256 creationTime  // 添加时间戳
     );
 
-    event MintBrutalDividendTokenCreated(
-        address indexed creator,
-        address tokenAddress,
-        string name,
-        string symbol,
-        uint256 totalSupply,
-        string protocolType,
-        uint256 creationTime  // 添加时间戳
-    );
-
-    event MintPoolBurnTokenCreated(
-        address indexed creator,
-        address tokenAddress,
-        string name,
-        string symbol,
-        uint256 totalSupply,
-        string protocolType,
-        uint256 creationTime  // 添加时间戳
-    );
 
     event LPMiningReferralTokenCreated(
         address indexed creator,
@@ -206,36 +183,24 @@ contract TokenFactory {
         uint256 creationTime  // 添加时间戳
     );
 
-    event Panda314Created(
-        address indexed creator,
-        address tokenAddress,
-        string name,
-        string symbol,
-        uint256 totalSupply,
-        string protocolType,
-        uint256 creationTime  // 添加时间戳
-    );
+ 
 
     constructor(
         address _standardTokenTemplate,
         address _dividendTokenTemplate,
         address _lpDividendTokenTemplate,
         address _lpDividendReferralTokenTemplate,
-        address _mintBrutalDividendTokenTemplate,
-        address _mintPoolBurnTokenTemplate,
         address _lpMiningReferralTokenTemplate,
         address _compoundingReferralTokenTemplate,
-        address _panda314Template
+        
     ) {
         standardTokenTemplate = _standardTokenTemplate;
         dividendTokenTemplate = _dividendTokenTemplate;
         lpDividendTokenTemplate = _lpDividendTokenTemplate;
         lpDividendReferralTokenTemplate = _lpDividendReferralTokenTemplate;
-        mintBrutalDividendTokenTemplate = _mintBrutalDividendTokenTemplate;
-        mintPoolBurnTokenTemplate = _mintPoolBurnTokenTemplate;
         lpMiningReferralTokenTemplate = _lpMiningReferralTokenTemplate;
         compoundingReferralTokenTemplate = _compoundingReferralTokenTemplate;
-        panda314Template = _panda314Template;
+        
     }
 
     function createStandardToken(
@@ -357,63 +322,7 @@ contract TokenFactory {
         emit LPDividendReferralTokenCreated(msg.sender, clone, stringParams[0], stringParams[1], numberParams[0], numberParams[1], protocolType, creationTime);
         return clone;
     }
-
-    function createMintBrutalDividendToken(
-        string[] memory stringParams, 
-        address[] memory addressParams, 
-        uint256[] memory numberParams
-    ) external payable returns (address) {
-        require(msg.value == mintBrutalDividendTokenFee, "Incorrect fee");
-
-        address clone = mintBrutalDividendTokenTemplate.clone();
-        IPandaMintBrutalDividendToken(clone).initialize(stringParams, addressParams, numberParams);
-
-        string memory protocolType = "Mint+Brutal Dividend Token";
-        uint256 creationTime = block.timestamp;  // 记录时间戳
-        CreatedContract memory newContract = CreatedContract({
-            creator: msg.sender,
-            contractAddress: clone,
-            protocolType: protocolType,
-            creationTime: creationTime
-        });
-        createdContracts.push(newContract);
-        contractsByCreator[msg.sender].push(newContract);
-
-        (bool success, ) = feeRecipient.call{value: msg.value}("");
-        require(success, "Fee transfer failed");
-
-        emit MintBrutalDividendTokenCreated(msg.sender, clone, stringParams[0], stringParams[1], numberParams[0], protocolType, creationTime);
-        return clone;
-    }
-
-    function createMintPoolBurnToken(
-        string[] memory stringParams, 
-        address[] memory addressParams, 
-        uint256[] memory numberParams, 
-        bool[] memory boolParams
-    ) external payable returns (address) {
-        require(msg.value == mintPoolBurnTokenFee, "Incorrect fee");
-
-        address clone = mintPoolBurnTokenTemplate.clone();
-        IPandaMintPoolBurnToken(clone).initialize(stringParams, addressParams, numberParams, boolParams);
-
-        string memory protocolType = "Mint+Pool Burn Token";
-        uint256 creationTime = block.timestamp;  // 记录时间戳
-        CreatedContract memory newContract = CreatedContract({
-            creator: msg.sender,
-            contractAddress: clone,
-            protocolType: protocolType,
-            creationTime: creationTime
-        });
-        createdContracts.push(newContract);
-        contractsByCreator[msg.sender].push(newContract);
-
-        (bool success, ) = feeRecipient.call{value: msg.value}("");
-        require(success, "Fee transfer failed");
-
-        emit MintPoolBurnTokenCreated(msg.sender, clone, stringParams[0], stringParams[1], numberParams[0], protocolType, creationTime);
-        return clone;
-    }
+   
 
     function createLPMiningReferralToken(
         string[] memory stringParams, 
@@ -473,34 +382,6 @@ contract TokenFactory {
         return clone;
     }
 
-    function createPanda314Token(
-        string[] memory stringParams, 
-        address[] memory addressParams,
-        uint256[] memory numberParams, 
-        bool[] memory boolParams
-    ) external payable returns (address) {
-        require(msg.value == panda314Fee, "Incorrect fee");
-
-        address clone = panda314Template.clone();
-        IPanda314(clone).initialize(stringParams, addressParams, numberParams, boolParams);
-
-        string memory protocolType = "314 Token";
-        uint256 creationTime = block.timestamp;  // 记录时间戳
-        CreatedContract memory newContract = CreatedContract({
-            creator: msg.sender,
-            contractAddress: clone,
-            protocolType: protocolType,
-            creationTime: creationTime
-        });
-        createdContracts.push(newContract);
-        contractsByCreator[msg.sender].push(newContract);
-
-        (bool success, ) = feeRecipient.call{value: msg.value}("");
-        require(success, "Fee transfer failed");
-
-        emit Panda314Created(msg.sender, clone, stringParams[0], stringParams[1], numberParams[0], protocolType, creationTime);
-        return clone;
-    }
 
     function getContractsByCreator(address creator) external view returns (CreatedContract[] memory) {
         return contractsByCreator[creator];

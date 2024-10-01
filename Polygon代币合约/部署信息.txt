@@ -1,0 +1,3 @@
+polygon mainnet
+标准代币模版合约地址：0x263e1bca1fa6f39b269e0ab2242d5f10879b2088
+clone工厂合约地址：0x24dc949a47fc95734ec99e759de27af81a03fb34

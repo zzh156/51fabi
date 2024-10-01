@@ -1,1 +1,4 @@
 标准代币合约部署在arb sepolia：0x8478ad414a45da7cab52366666c712d2612fd329
+
+标准代币合约部署在eth主网：0x263e1bca1fa6f39b269e0ab2242d5f10879b2088
+clone工厂合约部署在eth主网：0x24dc949a47fc95734ec99e759de27af81a03fb34

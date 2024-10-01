@@ -18,7 +18,7 @@ contract StandardTokenFactory {
 
     address public immutable template;
     address public feeRecipient = 0x2fa5fBC3472F75A99559F9e6A0aD02cd7132a3c0;
-    uint256 public constant creationFee = 0.025 ether;
+    uint256 public constant creationFee = 20 ether;
 
     struct CreatedContract {
         address creator;
